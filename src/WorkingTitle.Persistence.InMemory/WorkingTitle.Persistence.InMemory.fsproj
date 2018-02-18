@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="EventStore.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
+  </ItemGroup>
+</Project>

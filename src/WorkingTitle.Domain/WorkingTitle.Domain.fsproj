@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="EventSource/ICmsEvent.fs" />
+    <Compile Include="Infrastructure/IEventStore.fs" />
+    <Compile Include="Primitives/Email.fs" />
+    <Compile Include="Primitives/Username.fs" />
+    <Compile Include="Accounts/Events/AccountCreated.fs" />
+    <Compile Include="Accounts/Events/AccountUsernameChanged.fs" />
+    <Compile Include="Accounts/Events/AccountEmailChanged.fs" />
+    <Compile Include="Accounts/Snapshots/AccountState.fs" />
+    <Compile Include="Accounts/Account.fs" />
+  </ItemGroup>
+
+</Project>
