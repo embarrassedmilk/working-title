@@ -4,9 +4,11 @@ open System
 open WorkingTitle.Domain.EventSource
 open WorkingTitle.Domain.Primitives
 
-type AccountEmailChanged(id: Guid, email: Email) =
+type AccountEmailChanged(id: Guid, timestamp: DateTimeOffset, email: Email) =
     member this.Email = email
+    member this.EntityId = (this :> ICmsEvent).EntityId
+    member this.Timestamp = (this :> ICmsEvent).Timestamp
 
     interface ICmsEvent with
         member this.EntityId = id
-        member this.Timestamp = DateTimeOffset.UtcNow
+        member this.Timestamp = timestamp
