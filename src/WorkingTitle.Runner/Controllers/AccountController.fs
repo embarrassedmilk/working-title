@@ -1,6 +1,7 @@
 ﻿namespace Snake.FRunner.Controllers
 open System
 open WorkingTitle.Domain.Accounts
+open WorkingTitle.Domain.Accounts.Snapshots
 open WorkingTitle.Domain.Accounts.Commands
 open WorkingTitle.Persistence.InMemory
 open Microsoft.AspNetCore.Mvc
@@ -13,9 +14,20 @@ type AccountController () =
     [<HttpPost>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
         let (evt, state) = Account.Create cmd
-        EventWriter.Store evt
+        EventStore.Store evt
         state
+
+    [<HttpPost>]
+    member __.ChangeUsername([<FromBody>]cmd:ChangeAccountUsername) = 
+        let state = EventStore.Get cmd.Id |> Account.GetAccountStateFromEvents
+        let (evt, newState) = Account.ChangeUsername state cmd
+        EventStore.Store evt
+        newState
 
     [<HttpGet("{id}")>]
     member __.GetEventsById(id:Guid) =
-        EventWriter.Get id
+        EventStore.Get id
+
+    [<HttpGet("{id}")>]
+    member __.GetSnapshotById(id:Guid) =
+        EventStore.Get id |> Account.GetAccountStateFromEvents
