@@ -11,23 +11,36 @@ open Microsoft.AspNetCore.Builder
 type AccountController () =
     inherit Controller()
 
+    let getEvents (id:Guid) =
+        EventStore.Get id |> List.map (snd)
+
     [<HttpPost>]
+    [<Route("create")>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
-        let (evt, state) = Account.Create cmd
-        EventStore.Store evt
+        let (evt, entityId, state) = Account.Create cmd
+        EventStore.Store (entityId, evt)
         state
 
     [<HttpPost>]
+    [<Route("changeusername")>]
     member __.ChangeUsername([<FromBody>]cmd:ChangeAccountUsername) = 
-        let state = EventStore.Get cmd.Id |> Account.GetAccountStateFromEvents
-        let (evt, newState) = Account.ChangeUsername state cmd
-        EventStore.Store evt
+        let state = getEvents cmd.Id |>  Account.GetAccountStateFromEvents
+        let (evt, entityId, newState) = Account.ChangeUsername state cmd
+        EventStore.Store (entityId, evt)
         newState
 
-    [<HttpGet("{id}")>]
-    member __.GetEventsById(id:Guid) =
-        EventStore.Get id
+    [<HttpPost>]
+    [<Route("changeemail")>]
+    member __.ChangeEmail([<FromBody>]cmd:ChangeAccountEmail) = 
+        let state = getEvents cmd.Id |> Account.GetAccountStateFromEvents
+        let (evt, entityId, newState) = Account.ChangeEmail state cmd
+        EventStore.Store (entityId, evt)
+        newState
 
-    [<HttpGet("{id}")>]
+    [<HttpGet("events/{id}")>]
+    member __.GetEventsById(id:Guid) =
+        getEvents id
+
+    [<HttpGet("state/{id}")>]
     member __.GetSnapshotById(id:Guid) =
-        EventStore.Get id |> Account.GetAccountStateFromEvents
+        getEvents id |> Account.GetAccountStateFromEvents

@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="EventSource/ICmsEvent.fs" />
     <Compile Include="Primitives/Email.fs" />
     <Compile Include="Primitives/Username.fs" />
     <Compile Include="Accounts/Events/AccountCreated.fs" />
     <Compile Include="Accounts/Events/AccountUsernameChanged.fs" />
     <Compile Include="Accounts/Events/AccountEmailChanged.fs" />
+    <Compile Include="EventSource/Events.fs" />
     <Compile Include="Accounts/Snapshots/AccountState.fs" />
     <Compile Include="Accounts/Commands/CreateAccount.fs" />
     <Compile Include="Accounts/Commands/ChangeAccountEmail.fs" />

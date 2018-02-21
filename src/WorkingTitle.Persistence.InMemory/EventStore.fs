@@ -1,13 +1,15 @@
 namespace WorkingTitle.Persistence.InMemory
 
-open WorkingTitle.Domain.EventSource
 open System
+open WorkingTitle.Domain.EventSource
+
+type Envelope = (Guid*AccountEvents) 
 
 type EventStore() =
     static let mutable _eventList = []
 
-    static member Store(evt: ICmsEvent) = 
+    static member Store(evt: Envelope) = 
         _eventList <- evt::_eventList
 
     static member Get(entityId: Guid) =
-        _eventList |> List.filter(fun evt -> Guid.Equals(evt.EntityId, entityId))
+        _eventList |> List.rev |> List.filter(fun evt -> Guid.Equals((fst evt), entityId))
