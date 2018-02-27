@@ -5,7 +5,7 @@ open WorkingTitle.Domain.Accounts.Commands
 open WorkingTitle.Domain.EventSource
 
 type Account() = 
-    static member Apply (s: AccountState) (evt: AccountEvents) = 
+    static member Apply (s: AccountState) (evt: Events) = 
         match s, evt with
         | NonExistingAccount _, Created accountCreated ->
             let newState = ExistingAccountState(accountCreated.EntityId, accountCreated.Email, accountCreated.Username)
@@ -20,19 +20,19 @@ type Account() =
             s
 
     static member Create (cmd:CreateAccount) = 
-        let (evt, entityId) = cmd.ToEvent()
+        let evt = cmd.ToEvent()
         let state = Account.Apply NonExistingAccount evt
-        (evt, entityId, state)
+        (evt, state)
 
     static member ChangeEmail (currentState:AccountState) (cmd:ChangeAccountEmail) =
-        let (evt, entityId) = cmd.ToEvent()
+        let evt = cmd.ToEvent()
         let state = Account.Apply currentState evt
-        (evt, entityId, state)
+        (evt, state)
     
     static member ChangeUsername (currentState:AccountState) (cmd:ChangeAccountUsername) =
-        let (evt, entityId) = cmd.ToEvent()
+        let evt = cmd.ToEvent()
         let state = Account.Apply currentState evt
-        (evt, entityId, state)
+        (evt, state)
 
-    static member GetAccountStateFromEvents (evts:AccountEvents list) =
+    static member GetAccountStateFromEvents (evts:Events list) =
         evts |> List.fold Account.Apply NonExistingAccount

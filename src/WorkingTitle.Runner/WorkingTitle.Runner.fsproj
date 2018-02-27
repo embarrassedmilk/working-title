@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
     <ProjectReference Include="..\WorkingTitle.Persistence.InMemory\WorkingTitle.Persistence.InMemory.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
   </ItemGroup>
 
 </Project>

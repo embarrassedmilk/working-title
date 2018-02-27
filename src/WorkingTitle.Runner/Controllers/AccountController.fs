@@ -12,29 +12,29 @@ type AccountController () =
     inherit Controller()
 
     let getEvents (id:Guid) =
-        EventStore.Get id |> List.map (snd)
+        EventStore.Get id
 
     [<HttpPost>]
     [<Route("create")>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
-        let (evt, entityId, state) = Account.Create cmd
-        EventStore.Store (entityId, evt)
+        let (evt, state) = Account.Create cmd
+        EventStore.Store evt
         state
 
     [<HttpPost>]
     [<Route("changeusername")>]
     member __.ChangeUsername([<FromBody>]cmd:ChangeAccountUsername) = 
         let state = getEvents cmd.Id |>  Account.GetAccountStateFromEvents
-        let (evt, entityId, newState) = Account.ChangeUsername state cmd
-        EventStore.Store (entityId, evt)
+        let (evt, newState) = Account.ChangeUsername state cmd
+        EventStore.Store evt
         newState
 
     [<HttpPost>]
     [<Route("changeemail")>]
     member __.ChangeEmail([<FromBody>]cmd:ChangeAccountEmail) = 
         let state = getEvents cmd.Id |> Account.GetAccountStateFromEvents
-        let (evt, entityId, newState) = Account.ChangeEmail state cmd
-        EventStore.Store (entityId, evt)
+        let (evt, newState) = Account.ChangeEmail state cmd
+        EventStore.Store evt
         newState
 
     [<HttpGet("events/{id}")>]
