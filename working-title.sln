@@ -11,6 +11,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WorkingTitle.Domain", "src\
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WorkingTitle.Persistence.InMemory", "src\WorkingTitle.Persistence.InMemory\WorkingTitle.Persistence.InMemory.fsproj", "{C4D516BD-5C86-4977-8E80-F0EF5D7FB6D4}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WorkingTitle.Utils", "src\WorkingTitle.Utils\WorkingTitle.Utils.fsproj", "{09938B7D-30D4-4A75-9DDD-904FC269D56A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{C4D516BD-5C86-4977-8E80-F0EF5D7FB6D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4D516BD-5C86-4977-8E80-F0EF5D7FB6D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4D516BD-5C86-4977-8E80-F0EF5D7FB6D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09938B7D-30D4-4A75-9DDD-904FC269D56A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09938B7D-30D4-4A75-9DDD-904FC269D56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09938B7D-30D4-4A75-9DDD-904FC269D56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09938B7D-30D4-4A75-9DDD-904FC269D56A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +43,7 @@ Global
 		{51C2C5B6-B3CA-40C2-8700-42FB1B6D7BFC} = {39CCF7E0-4646-4AA8-B063-F475D9907219}
 		{940D2148-77E5-4388-A226-45BB0C7BE417} = {39CCF7E0-4646-4AA8-B063-F475D9907219}
 		{C4D516BD-5C86-4977-8E80-F0EF5D7FB6D4} = {39CCF7E0-4646-4AA8-B063-F475D9907219}
+		{09938B7D-30D4-4A75-9DDD-904FC269D56A} = {39CCF7E0-4646-4AA8-B063-F475D9907219}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77C2A797-FFF5-403F-917B-A3C06895ED17}

@@ -5,8 +5,10 @@ open WorkingTitle.Domain.EventSource
 open WorkingTitle.Domain.Accounts.Events
 open System
 
-type ChangeAccountEmail(id: Guid, email: Email) =
+type ChangeAccountEmail(id: Guid, email: string) =
     member this.Id = id
+    member this.Email = email
     member this.ToEvent() = 
-        let emailChanged = AccountEmailChanged(id, DateTimeOffset.UtcNow, email)
-        (EmailChanged emailChanged, emailChanged.EntityId)
+        EmailAddress.create this.Email
+        |>> (fun email -> AccountEmailChanged(id, DateTimeOffset.UtcNow, email))
+        |>> EmailChanged

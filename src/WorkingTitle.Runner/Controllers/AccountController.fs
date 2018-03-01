@@ -1,41 +1,40 @@
 ﻿namespace Snake.FRunner.Controllers
 open System
 open WorkingTitle.Domain.Accounts
-open WorkingTitle.Domain.Accounts.Snapshots
 open WorkingTitle.Domain.Accounts.Commands
 open WorkingTitle.Persistence.InMemory
 open Microsoft.AspNetCore.Mvc
-open Microsoft.AspNetCore.Builder
+open WorkingTitle.Utils.RResult
 
 [<Route("api/[controller]")>]
 type AccountController () =
     inherit Controller()
 
     let getEvents (id:Guid) =
-        EventStore.Get id |> List.map (snd)
+        EventStore.Get id
 
     [<HttpPost>]
     [<Route("create")>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
-        let (evt, entityId, state) = Account.Create cmd
-        EventStore.Store (entityId, evt)
-        state
+        match Account.Create cmd with
+        | RResult.Good (evt, state) -> EventStore.Store evt ; __.Ok state :> IActionResult
+        | RResult.Bad  rbad         -> (rbad.Describe() |> __.BadRequest) :> IActionResult
 
     [<HttpPost>]
     [<Route("changeusername")>]
     member __.ChangeUsername([<FromBody>]cmd:ChangeAccountUsername) = 
         let state = getEvents cmd.Id |>  Account.GetAccountStateFromEvents
-        let (evt, entityId, newState) = Account.ChangeUsername state cmd
-        EventStore.Store (entityId, evt)
-        newState
+        match Account.ChangeUsername state cmd with
+        | RResult.Good (evt, newState)  -> EventStore.Store evt ; __.Ok newState    :> IActionResult
+        | RResult.Bad  rbad             -> (rbad.Describe() |> __.BadRequest)       :> IActionResult
 
     [<HttpPost>]
     [<Route("changeemail")>]
     member __.ChangeEmail([<FromBody>]cmd:ChangeAccountEmail) = 
         let state = getEvents cmd.Id |> Account.GetAccountStateFromEvents
-        let (evt, entityId, newState) = Account.ChangeEmail state cmd
-        EventStore.Store (entityId, evt)
-        newState
+        match Account.ChangeEmail state cmd with
+        | RResult.Good (evt, newState)  -> EventStore.Store evt ; __.Ok newState    :> IActionResult
+        | RResult.Bad  rbad             -> (rbad.Describe() |> __.BadRequest)       :> IActionResult
 
     [<HttpGet("events/{id}")>]
     member __.GetEventsById(id:Guid) =

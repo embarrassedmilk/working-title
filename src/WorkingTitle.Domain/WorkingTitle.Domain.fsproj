@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Primitives/WrappedString.fs" />
     <Compile Include="Primitives/Email.fs" />
-    <Compile Include="Primitives/Username.fs" />
     <Compile Include="Accounts/Events/AccountCreated.fs" />
     <Compile Include="Accounts/Events/AccountUsernameChanged.fs" />
     <Compile Include="Accounts/Events/AccountEmailChanged.fs" />
@@ -16,6 +16,10 @@
     <Compile Include="Accounts/Commands/ChangeAccountEmail.fs" />
     <Compile Include="Accounts/Commands/ChangeAccountUsername.fs" />
     <Compile Include="Accounts/Account.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
   </ItemGroup>
 
 </Project>
