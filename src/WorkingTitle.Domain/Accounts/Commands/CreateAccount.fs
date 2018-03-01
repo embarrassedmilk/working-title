@@ -9,6 +9,6 @@ type CreateAccount(email: string, username: string) =
     member this.Email = email
     member this.Username = username
     member this.ToEvent() = 
-        let email = EmailAddress.create this.Email
-        let created = AccountCreated(Guid.NewGuid(), DateTimeOffset.UtcNow, , this.Username)
-        Created created
+        EmailAddress.create this.Email
+        |>> (fun email -> AccountCreated(Guid.NewGuid(), DateTimeOffset.UtcNow, email, this.Username))
+        |>> Created

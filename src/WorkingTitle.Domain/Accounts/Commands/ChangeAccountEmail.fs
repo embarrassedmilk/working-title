@@ -7,6 +7,8 @@ open System
 
 type ChangeAccountEmail(id: Guid, email: string) =
     member this.Id = id
+    member this.Email = email
     member this.ToEvent() = 
-        let emailChanged = AccountEmailChanged(id, DateTimeOffset.UtcNow, email)
-        EmailChanged emailChanged
+        EmailAddress.create this.Email
+        |>> (fun email -> AccountEmailChanged(id, DateTimeOffset.UtcNow, email))
+        |>> EmailChanged

@@ -4,9 +4,11 @@ open WorkingTitle.Domain.Primitives
 open WorkingTitle.Domain.EventSource
 open WorkingTitle.Domain.Accounts.Events
 open System
+open WorkingTitle.Utils.RResult
 
 type ChangeAccountUsername(id: Guid, username: string) =
     member this.Id = id
+    member this.Username = username
     member this.ToEvent() = 
-        let usernameChanged = AccountUsernameChanged(id, DateTimeOffset.UtcNow, username)
-        UsernameChanged usernameChanged
+        RResult.rgood (AccountUsernameChanged(id, DateTimeOffset.UtcNow, this.Username))
+        |>> UsernameChanged

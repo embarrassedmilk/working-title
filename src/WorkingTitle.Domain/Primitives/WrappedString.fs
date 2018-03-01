@@ -1,20 +1,18 @@
 module WrappedString
     open WorkingTitle.Utils
-
-    type IWrappedString = 
-        abstract Value: string
+    open WorkingTitle.Utils.RResult
 
     let create canonicalize isValid ctor (s:string) = 
         match s with
-        | null -> Result.F
+        | null -> RResult.rmsg "input value must be provided"
         | _ ->
             let s' = canonicalize s
             if isValid s'
-            then Some (ctor s')
-            else None
+            then RResult.rgood (ctor s')
+            else RResult.rmsg "validation failed"
 
-    let apply f (s:IWrappedString) = 
-        s.Value |> f
+    let apply f (s:string) = 
+        s |> f
 
     let value s = apply id s
 

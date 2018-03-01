@@ -54,3 +54,49 @@ module RResult =
             sb.ToString ()
 
         member x.Join o = Fork (x, o)
+
+    [<RequireQualifiedAccess>]
+    [<Struct>]
+    [<StructuredFormatDisplay("{StructuredDisplayString}")>]
+    type RResult<'T> =
+        | Good of good : 'T
+        | Bad  of bad  : RBadTree
+
+        member x.StructuredDisplayString =
+            match x with
+            | Good good -> sprintf "Good (%A)" good
+            | Bad  bad  -> sprintf "Bad (%A)"  bad
+
+        override x.ToString() = x.StructuredDisplayString
+
+    module RResult = 
+        exception DerefException of RBadTree
+
+        let inline rreturn v = RResult.Good v
+
+        let inline rbind (f: 'T -> RResult<'U>) (r: RResult<'T>) : RResult<'U> =
+            match r with
+            | RResult.Good good -> f good
+            | RResult.Bad  bad  -> RResult.Bad bad
+
+        let inline rapply (r: RResult<'T>) (f: RResult<'T -> 'U>) : RResult<'U> =
+            match f,r with
+            | RResult.Bad  fBad   , RResult.Bad rBad   -> fBad.Join rBad |> RResult.Bad
+            | RResult.Good fGood  , RResult.Good rGood -> rreturn(fGood rGood)
+            | RResult.Bad  fBad   , _                  -> RResult.Bad fBad
+            | _                   , RResult.Bad rBad   -> RResult.Bad rBad
+
+        let inline rmap (f: 'T -> 'U) (r: RResult<'T>) : RResult<'U> =
+            match r with
+            | RResult.Good rgood -> f rgood |> rreturn
+            | RResult.Bad  rbad  -> RResult.Bad rbad
+
+        let inline rgood    v   = rreturn v
+        let inline rbad     b   = RResult.Bad (RBadTree.Leaf b)
+        let inline rmsg     msg = rbad (RBad.Message msg)
+        let inline rexn     e   = rbad (RBad.Exception e)
+
+    type RResult<'T> with
+        static member inline (>>=)  (x, uf) = RResult.rbind    uf x
+        static member inline (<*>)  (x, t)  = RResult.rapply   t x
+        static member inline (|>>)  (x, m)  = RResult.rmap     m x
