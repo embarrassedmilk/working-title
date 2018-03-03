@@ -7,7 +7,7 @@ type Events =
     | Created of AccountCreated
     | EmailChanged of AccountEmailChanged
     | UsernameChanged of AccountUsernameChanged
-    member x.EntityId : Guid = 
+    member x.EntityId : string = 
         match x with 
         | Created created -> created.EntityId
         | EmailChanged emailChanged -> emailChanged.EntityId

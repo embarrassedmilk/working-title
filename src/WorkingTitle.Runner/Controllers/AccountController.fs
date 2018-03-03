@@ -1,45 +1,66 @@
 ﻿namespace Snake.FRunner.Controllers
-open System
 open WorkingTitle.Domain.Accounts
 open WorkingTitle.Domain.Accounts.Commands
-open WorkingTitle.Persistence.InMemory
 open Microsoft.AspNetCore.Mvc
 open WorkingTitle.Utils.RResult
+open WorkingTitle.Persistence.EventStore.Store
 
 [<Route("api/[controller]")>]
 type AccountController () =
     inherit Controller()
 
-    let getEvents (id:Guid) =
-        EventStore.Get id
+    let store = Store(StoreSettings("ConnectTo=tcp://admin:changeit@localhost:1113;"))
+
+    let getEvents (id:string) =
+        store.GetEvents id
+        |> Async.RunSynchronously
+        |>> Array.toList
 
     [<HttpPost>]
     [<Route("create")>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
-        match Account.Create cmd with
-        | RResult.Good (evt, state) -> EventStore.Store evt ; __.Ok state :> IActionResult
-        | RResult.Bad  rbad         -> (rbad.Describe() |> __.BadRequest) :> IActionResult
+        let res = Account.Create cmd >>= (fun (evts, _) -> store.Store evts.Head.EntityId evts |> Async.RunSynchronously)
+
+        match res with
+        | RResult.Good _   -> __.Ok "OK"                             :> IActionResult
+        | RResult.Bad  rbad -> (rbad.Describe() |> __.BadRequest)    :> IActionResult
 
     [<HttpPost>]
     [<Route("changeusername")>]
     member __.ChangeUsername([<FromBody>]cmd:ChangeAccountUsername) = 
-        let state = getEvents cmd.Id |>  Account.GetAccountStateFromEvents
-        match Account.ChangeUsername state cmd with
-        | RResult.Good (evt, newState)  -> EventStore.Store evt ; __.Ok newState    :> IActionResult
-        | RResult.Bad  rbad             -> (rbad.Describe() |> __.BadRequest)       :> IActionResult
+        let res = getEvents cmd.Id
+                |>> Account.ReplayAccount
+                >>= Account.ChangeUsername cmd
+                >>= (fun (evts, _) -> store.Store cmd.Id evts |> Async.RunSynchronously)
+
+        match res with
+        | RResult.Good _    -> __.Ok "Success!"                     :> IActionResult
+        | RResult.Bad  rbad -> (rbad.Describe() |> __.BadRequest)   :> IActionResult
 
     [<HttpPost>]
     [<Route("changeemail")>]
     member __.ChangeEmail([<FromBody>]cmd:ChangeAccountEmail) = 
-        let state = getEvents cmd.Id |> Account.GetAccountStateFromEvents
-        match Account.ChangeEmail state cmd with
-        | RResult.Good (evt, newState)  -> EventStore.Store evt ; __.Ok newState    :> IActionResult
-        | RResult.Bad  rbad             -> (rbad.Describe() |> __.BadRequest)       :> IActionResult
+        let res = getEvents cmd.Id
+                |>> Account.ReplayAccount
+                >>= Account.ChangeEmail cmd
+                >>= (fun (evts, _) -> store.Store cmd.Id evts |> Async.RunSynchronously)
+
+        match res with
+        | RResult.Good _    -> __.Ok "Success!"                     :> IActionResult
+        | RResult.Bad  rbad -> (rbad.Describe() |> __.BadRequest)   :> IActionResult
 
     [<HttpGet("events/{id}")>]
-    member __.GetEventsById(id:Guid) =
-        getEvents id
+    member __.GetEventsById(id:string) =
+        let res = getEvents id
+        
+        match res with 
+        | RResult.Good evts ->  __.Ok evts                        :> IActionResult
+        | RResult.Bad  rbad -> (rbad.Describe() |> __.BadRequest) :> IActionResult
 
     [<HttpGet("state/{id}")>]
-    member __.GetSnapshotById(id:Guid) =
-        getEvents id |> Account.GetAccountStateFromEvents
+    member __.GetSnapshotById(id:string) =
+        let res = getEvents id |>> Account.ReplayAccount
+        
+        match res with 
+        | RResult.Good state  ->  __.Ok state                       :> IActionResult
+        | RResult.Bad  rbad   -> (rbad.Describe() |> __.BadRequest) :> IActionResult

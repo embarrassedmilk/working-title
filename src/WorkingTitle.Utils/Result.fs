@@ -15,10 +15,10 @@ module RResult =
         member x.DescribeTo (sb: StringBuilder) =
             let inline app (t : string) = sb.Append t |> ignore
             match x with 
-            | Message           msg -> app "Message: " ; app msg
-            | Exception         e -> app "Exception message: " ; app e.Message
-            | Object            o ->   app "Object: " ; sb.Append o |> ignore
-            | DescribedObject   (d,o) ->  app "Description: " ; app d ; app "Object: " ; sb.Append o |> ignore
+            | Message           msg     -> app "Message: "              ; app msg
+            | Exception         e       -> app "Exception message: "    ; app e.Message
+            | Object            o       -> app "Object: "               ; sb.Append o |> ignore
+            | DescribedObject   (d,o)   -> app "Description: "          ; app d ; app "Object: " ; sb.Append o |> ignore
 
     [<RequireQualifiedAccess>]
     type RBadTree = 

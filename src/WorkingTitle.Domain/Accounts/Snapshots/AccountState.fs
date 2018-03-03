@@ -2,7 +2,7 @@ namespace WorkingTitle.Domain.Accounts.Snapshots
 open System
 open WorkingTitle.Domain.Primitives
 
-type ExistingAccountState(id: Guid, email: string, username: string) = 
+type ExistingAccountState(id: string, email: string, username: string) = 
     member this.Email = email
     member this.Username = username
     member this.Id = id

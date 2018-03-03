@@ -6,7 +6,7 @@ open WorkingTitle.Domain.Accounts.Events
 open System
 open WorkingTitle.Utils.RResult
 
-type ChangeAccountUsername(id: Guid, username: string) =
+type ChangeAccountUsername(id: string, username: string) =
     member this.Id = id
     member this.Username = username
     member this.ToEvent() = 

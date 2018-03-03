@@ -10,5 +10,5 @@ type CreateAccount(email: string, username: string) =
     member this.Username = username
     member this.ToEvent() = 
         EmailAddress.create this.Email
-        |>> (fun email -> AccountCreated(Guid.NewGuid(), DateTimeOffset.UtcNow, email, this.Username))
+        |>> (fun email -> AccountCreated(Guid.NewGuid().ToString(), DateTimeOffset.UtcNow, email, this.Username))
         |>> Created

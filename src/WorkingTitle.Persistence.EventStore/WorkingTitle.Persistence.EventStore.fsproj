@@ -5,9 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="EventStore.fs" />
+    <Compile Include="Store.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="EventStore.ClientAPI.NetCore" Version="4.1.0.23" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
     <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />

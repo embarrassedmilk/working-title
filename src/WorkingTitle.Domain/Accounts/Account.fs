@@ -23,19 +23,19 @@ type Account() =
         cmd.ToEvent()
         |>> (fun evt -> 
             let state = Account.Apply NonExistingAccount evt
-            (evt, state))
+            ([evt], state))
 
-    static member ChangeEmail (currentState:AccountState) (cmd:ChangeAccountEmail) =
+    static member ChangeEmail (cmd:ChangeAccountEmail) (currentState:AccountState) =
         cmd.ToEvent()
         |>> (fun evt -> 
             let state = Account.Apply currentState evt
-            (evt, state))
+            ([evt], state))
     
-    static member ChangeUsername (currentState:AccountState) (cmd:ChangeAccountUsername) =
+    static member ChangeUsername (cmd:ChangeAccountUsername) (currentState:AccountState) =
         cmd.ToEvent()
         |>> (fun evt -> 
             let state = Account.Apply currentState evt
-            (evt, state))
+            ([evt], state))
 
-    static member GetAccountStateFromEvents (evts:Events list) =
+    static member ReplayAccount (evts:Events list) =
         evts |> List.fold Account.Apply NonExistingAccount

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Settings.fs" />
     <Compile Include="Controllers\AccountController.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -25,7 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
-    <ProjectReference Include="..\WorkingTitle.Persistence.InMemory\WorkingTitle.Persistence.InMemory.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Persistence.EventStore\WorkingTitle.Persistence.EventStore.fsproj" />
     <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
   </ItemGroup>
 

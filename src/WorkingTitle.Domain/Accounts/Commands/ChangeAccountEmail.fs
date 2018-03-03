@@ -5,7 +5,7 @@ open WorkingTitle.Domain.EventSource
 open WorkingTitle.Domain.Accounts.Events
 open System
 
-type ChangeAccountEmail(id: Guid, email: string) =
+type ChangeAccountEmail(id: string, email: string) =
     member this.Id = id
     member this.Email = email
     member this.ToEvent() = 
