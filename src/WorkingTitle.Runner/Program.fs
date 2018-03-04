@@ -5,6 +5,7 @@ open Snake.Extensions.Serilog
 open Microsoft.AspNetCore.Hosting
 open Serilog
 open WorkingTitle.Runner
+open WorkingTitle.Runner.Extensions
 
 let getLoggerConfiguration = 
     LoggerConfiguration()
@@ -16,6 +17,7 @@ let getLoggerConfiguration =
 let main argv =
     SnakeWebHostBuilder<Settings>
         .CreateDefaultBuilder(argv)
+        .With(fun () -> SignalRPart() :> IApplicationPlugin)
         .WithMvc()
         .WithSwagger("ES app")
         .WithSerilog(getLoggerConfiguration)

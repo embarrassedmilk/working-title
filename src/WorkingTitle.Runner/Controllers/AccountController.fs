@@ -4,9 +4,11 @@ open WorkingTitle.Domain.Accounts.Commands
 open Microsoft.AspNetCore.Mvc
 open WorkingTitle.Utils.RResult
 open WorkingTitle.Persistence.EventStore.Store
+open Microsoft.AspNetCore.SignalR
+open WorkingTitle.Runner.Hubs
 
 [<Route("api/[controller]")>]
-type AccountController () =
+type AccountController (hc:IHubContext<EventsHub>) =
     inherit Controller()
 
     let store = Store(StoreSettings("ConnectTo=tcp://admin:changeit@localhost:1113;"))

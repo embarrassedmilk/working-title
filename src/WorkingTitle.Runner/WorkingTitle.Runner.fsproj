@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Compile Include="Settings.fs" />
+    <Compile Include="Hubs\EventsHub.fs" />
+    <Compile Include="Extensions\SnakeExtensions.fs" />
     <Compile Include="Controllers\AccountController.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -16,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-alpha2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.0-alpha2-final" />
     <PackageReference Include="System.Web.Http" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Snake.Core" Version="1.0.2" />
