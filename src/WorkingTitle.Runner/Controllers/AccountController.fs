@@ -19,6 +19,14 @@ type AccountController (hc:IHubContext<EventsHub>) =
         |>> Array.toList
 
     [<HttpPost>]
+    [<Route("sendviasignalr")>]
+    member __.TestSignalR([<FromBody>]payload: string) =
+        Async.AwaitTask(hc.Clients.All.InvokeAsync("eventhappened", payload))
+        |> Async.RunSynchronously
+
+        __.Ok "Sent something"
+    
+    [<HttpPost>]
     [<Route("create")>]
     member __.CreateAccount([<FromBody>]cmd:CreateAccount) =
         let res = Account.Create cmd >>= (fun (evts, _) -> store.Store evts.Head.EntityId evts |> Async.RunSynchronously)

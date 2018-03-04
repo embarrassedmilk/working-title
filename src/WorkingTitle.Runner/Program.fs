@@ -21,6 +21,7 @@ let main argv =
         .WithMvc()
         .WithSwagger("ES app")
         .WithSerilog(getLoggerConfiguration)
+        .With(fun () -> CorsPart() :> IApplicationPlugin)
         .Build("appsettings.json", "WorkingTitle.Runner")
         .Run()
     0

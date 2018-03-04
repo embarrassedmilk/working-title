@@ -20,3 +20,17 @@ type SignalRPart() =
 
         member x.BeforeBuild(app:IApplicationBuilder, env:IHostingEnvironment, services:IEnumerable<ServiceDescriptor>) = 
             ()
+
+
+type CorsPart() = 
+    interface IApplicationPlugin with
+        member x.Configure(app:IApplicationBuilder, env:IHostingEnvironment) = 
+            app.UseCors (fun pol -> pol.AllowAnyOrigin() |> ignore)
+            |> ignore
+
+        member x.ConfigureServices(services:IServiceCollection) =
+            services.AddCors()
+            |> ignore
+
+        member x.BeforeBuild(app:IApplicationBuilder, env:IHostingEnvironment, services:IEnumerable<ServiceDescriptor>) = 
+            ()
