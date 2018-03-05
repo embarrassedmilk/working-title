@@ -25,7 +25,7 @@ type SignalRPart() =
 type CorsPart() = 
     interface IApplicationPlugin with
         member x.Configure(app:IApplicationBuilder, env:IHostingEnvironment) = 
-            app.UseCors (fun pol -> pol.AllowAnyOrigin() |> ignore)
+            app.UseCors (fun pol -> pol.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore)
             |> ignore
 
         member x.ConfigureServices(services:IServiceCollection) =
