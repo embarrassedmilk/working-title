@@ -9,7 +9,14 @@ open System.Collections.Generic
 type CorsPart() = 
     interface IApplicationPlugin with
         member x.Configure(app:IApplicationBuilder, env:IHostingEnvironment) = 
-            app.UseCors (fun pol -> pol.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore)
+            app.UseCors (fun pol -> 
+                pol
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials() 
+                |> ignore
+            )
             |> ignore
 
         member x.ConfigureServices(services:IServiceCollection) =
