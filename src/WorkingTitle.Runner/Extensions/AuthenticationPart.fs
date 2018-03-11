@@ -5,21 +5,17 @@ open Microsoft.AspNetCore.Builder;
 open Microsoft.AspNetCore.Hosting;
 open Microsoft.Extensions.DependencyInjection;
 open Microsoft.AspNetCore.Authentication.Cookies;
-open Microsoft.AspNetCore.Authentication.Google;
-open Microsoft.AspNetCore.Authentication.OAuth;
 open System.Collections.Generic
 open System.Threading.Tasks
 open System
-open System.Web
 open Microsoft.AspNetCore.Authentication
-open System.Text.Encodings.Web
 open Microsoft.AspNetCore.Http
-open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Authentication
-open System.Net
-open Microsoft.AspNetCore.Authentication
+open WorkingTitle.Runner
+open Newtonsoft.Json
 
-type AuthenticationPart() = 
+type AuthenticationPart(settings: AuthenticationSettings) = 
+    member this.Settings = settings
+
     interface IApplicationPlugin with
         member x.Configure(app:IApplicationBuilder, env:IHostingEnvironment) = 
             app.UseAuthentication()
@@ -41,8 +37,8 @@ type AuthenticationPart() =
                     )
                 )
                 .AddGoogle(fun opts -> 
-                    opts.ClientId       <- ""
-                    opts.ClientSecret   <- ""
+                    opts.ClientId       <- x.Settings.ClientId
+                    opts.ClientSecret   <- x.Settings.ClientSecret
                 )
             |> ignore
 
