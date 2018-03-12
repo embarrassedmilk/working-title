@@ -12,6 +12,7 @@
     <Compile Include="Extensions\CorsPart.fs" />
     <Compile Include="Extensions\AuthenticationPart.fs" />
     <Compile Include="Controllers\AccountController.fs" />
+    <Compile Include="Controllers\PostsController.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

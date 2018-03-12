@@ -7,15 +7,13 @@
   <ItemGroup>
     <Compile Include="Primitives/WrappedString.fs" />
     <Compile Include="Primitives/Email.fs" />
-    <Compile Include="Accounts/Events/AccountCreated.fs" />
-    <Compile Include="Accounts/Events/AccountUsernameChanged.fs" />
-    <Compile Include="Accounts/Events/AccountEmailChanged.fs" />
+    <Compile Include="Posts/Events/PostPublished.fs" />
+    <Compile Include="Posts/Events/PostContentChanged.fs" />
     <Compile Include="EventSource/Events.fs" />
-    <Compile Include="Accounts/Snapshots/AccountState.fs" />
-    <Compile Include="Accounts/Commands/CreateAccount.fs" />
-    <Compile Include="Accounts/Commands/ChangeAccountEmail.fs" />
-    <Compile Include="Accounts/Commands/ChangeAccountUsername.fs" />
-    <Compile Include="Accounts/Account.fs" />
+    <Compile Include="Posts/Snapshots/PostState.fs" />
+    <Compile Include="Posts/Commands/PublishPost.fs" />
+    <Compile Include="Posts/Commands/ChangePostContent.fs" />
+    <Compile Include="Posts/Post.fs" />
   </ItemGroup>
 
   <ItemGroup>

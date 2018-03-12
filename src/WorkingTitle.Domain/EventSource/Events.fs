@@ -1,14 +1,12 @@
 namespace WorkingTitle.Domain.EventSource
 
 open System
-open WorkingTitle.Domain.Accounts.Events
+open WorkingTitle.Domain.Posts.Events
 
 type Events =
-    | Created of AccountCreated
-    | EmailChanged of AccountEmailChanged
-    | UsernameChanged of AccountUsernameChanged
+    | Published of PostPublished
+    | Edited of PostContentChanged
     member x.EntityId : string = 
         match x with 
-        | Created created -> created.EntityId
-        | EmailChanged emailChanged -> emailChanged.EntityId
-        | UsernameChanged usernameChanged -> usernameChanged.EntityId
+        | Published published -> published.EntityId
+        | Edited edited -> edited.EntityId
