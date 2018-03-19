@@ -3,12 +3,19 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="MessageQueue.fs" />
+  </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
 </Project>

@@ -10,4 +10,6 @@ type Settings() =
     inherit BaseSettings()
     
     member val EventSourceConnectionString = "" with get,set
+    member val RabbitMQConnectionString = "" with get,set
+    member val RedisConnectionString = "" with get,set
     member val AuthenticationSettings = new AuthenticationSettings() with get,set

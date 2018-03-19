@@ -11,6 +11,7 @@
     <Compile Include="Extensions\SignalRPart.fs" />
     <Compile Include="Extensions\CorsPart.fs" />
     <Compile Include="Extensions\AuthenticationPart.fs" />
+    <Compile Include="Extensions\BackgroundPart.fs" />
     <Compile Include="Controllers\AccountController.fs" />
     <Compile Include="Controllers\PostsController.fs" />
     <Compile Include="Program.fs" />

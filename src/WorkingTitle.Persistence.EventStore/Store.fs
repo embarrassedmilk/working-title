@@ -31,6 +31,10 @@ module Store =
         let mapEventSliceToEvents (slice: StreamEventsSlice) = 
             slice.Events
             |> Array.map resolvedEventToEvent
+            
+        let mapAllEventSliceToEvents (slice: AllEventsSlice) = 
+            slice.Events
+            |> Array.map resolvedEventToEvent
 
         member x.Settings = settings
         member x.Store (streamId: string) (evts: Events list) = async {
@@ -64,6 +68,24 @@ module Store =
                     Async.AwaitTask(conn.ReadStreamEventsForwardAsync(streamId, int64(0), 1000, false))
                     |> Async.RunSynchronously 
                     |> mapEventSliceToEvents
+                
+                return RResult.rgood res
+            with
+            | ex -> 
+                return RResult.rexn ex
+        }
+
+        member x.GetAll = async {
+            try 
+                use conn = EventStoreConnection.Create x.Settings.ConnectionString
+                
+                Async.AwaitTask(conn.ConnectAsync())
+                |> Async.RunSynchronously
+
+                let res = 
+                    Async.AwaitTask(conn.ReadAllEventsForwardAsync(Position.Start, 1000, false))
+                    |> Async.RunSynchronously 
+                    |> mapAllEventSliceToEvents
                 
                 return RResult.rgood res
             with

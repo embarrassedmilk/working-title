@@ -5,10 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Cache.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceStack.Redis" Version="5.0.2" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Persistence.EventStore\WorkingTitle.Persistence.EventStore.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.RabbitMQ\WorkingTitle.RabbitMQ.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
+  </ItemGroup>
 </Project>
