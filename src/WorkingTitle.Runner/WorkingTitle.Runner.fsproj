@@ -37,6 +37,8 @@
   <ItemGroup>
     <ProjectReference Include="..\WorkingTitle.Domain\WorkingTitle.Domain.fsproj" />
     <ProjectReference Include="..\WorkingTitle.Persistence.EventStore\WorkingTitle.Persistence.EventStore.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.RabbitMQ\WorkingTitle.RabbitMQ.fsproj" />
+    <ProjectReference Include="..\WorkingTitle.Redis\WorkingTitle.Redis.fsproj" />
     <ProjectReference Include="..\WorkingTitle.Utils\WorkingTitle.Utils.fsproj" />
   </ItemGroup>
 

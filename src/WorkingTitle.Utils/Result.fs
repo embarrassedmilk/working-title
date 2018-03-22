@@ -91,6 +91,11 @@ module RResult =
             | RResult.Good rgood -> f rgood |> rreturn
             | RResult.Bad  rbad  -> RResult.Bad rbad
 
+        let inline rtee (f: 'T -> unit) (r: RResult<'T>) : RResult<'T> = 
+            match r with
+            | RResult.Good rgood -> f rgood ; r
+            | RResult.Bad  _     -> r
+
         let inline rgood    v   = rreturn v
         let inline rbad     b   = RResult.Bad (RBadTree.Leaf b)
         let inline rmsg     msg = rbad (RBad.Message msg)
@@ -100,3 +105,4 @@ module RResult =
         static member inline (>>=)  (x, uf) = RResult.rbind    uf x
         static member inline (<*>)  (x, t)  = RResult.rapply   t x
         static member inline (|>>)  (x, m)  = RResult.rmap     m x
+        static member inline (|-)   (x, t)  = RResult.rtee     t x
