@@ -10,6 +10,7 @@ open WorkingTitle.Domain.EventSource
 open WorkingTitle.Domain.Posts
 open WorkingTitle.Utils.RResult
 open System.Collections.Generic
+open WrappedString
 
 type CacheSettings (connectionString: string) =
     member x.ConnectionString = connectionString
@@ -18,6 +19,9 @@ type Cache(cacheSettings: CacheSettings) =
     let getKeys (server: IServer) =
         server.Keys()
         |> Seq.map (fun k -> k.ToString())
+
+    let flush (server: IServer) =
+        server.FlushAllDatabases()
 
     let getPost (serializedPost: string) =
         serializedPost |> JsonConvert.DeserializeObject<PostState>
@@ -28,7 +32,7 @@ type Cache(cacheSettings: CacheSettings) =
     let getPostByKey (muxer: ConnectionMultiplexer) (key: string)  = async {
         let database = muxer.GetDatabase()
         let! value = database.StringGetAsync(RedisKey.op_Implicit(key)) |> Async.AwaitTask
-        return getPost (value.ToString())
+        return if (value.HasValue) then Some(getPost (value.ToString())) else None
     }
 
     let savePost (muxer: ConnectionMultiplexer) (key: string, post: PostState) = async {
@@ -41,13 +45,12 @@ type Cache(cacheSettings: CacheSettings) =
     let getEvents (store:Store) =
         store.GetAll
         |> Async.RunSynchronously
-        |>> Array.toList
 
     let groupById (evts: Events list) =
         evts |> List.groupBy (fun evt -> evt.EntityId)
 
     let replayPostStream (entityId: string, evts: Events list) =
-        (entityId, evts |> Post.ReplayPost)
+        (entityId, evts |> List.sortBy (fun evt -> evt.Timestamp) |> Post.ReplayPost)
 
     member x.Settings = cacheSettings
 
@@ -78,15 +81,20 @@ type Cache(cacheSettings: CacheSettings) =
             return RResult.rexn ex
     }
 
-    member x.Subscribe(queue: MessageQueueReader) = async {
+    member x.CheckQueue(queue: MessageQueueReader) = async {
         try
             let! conn = ConnectionMultiplexer.ConnectAsync(x.Settings.ConnectionString) |> Async.AwaitTask
-            return queue.Subscribe(fun evt -> 
+            queue.Poll(fun evt -> 
                 x.GetPostById evt.EntityId |> Async.RunSynchronously
-                |>> fun state -> Post.Apply state evt
+                |>> fun optionState -> 
+                        match optionState with
+                        | Some s -> Post.Apply s evt
+                        | None   -> Post.Apply PostState.NonExistingPost evt
                 |>> fun newState -> (savePost conn (evt.EntityId, newState)) |> Async.RunSynchronously
                 |> ignore
-            )
+            ) |> ignore
+
+            return RResult.rgood ()
         with
         | ex -> 
             return RResult.rexn ex
@@ -95,6 +103,12 @@ type Cache(cacheSettings: CacheSettings) =
     member x.Rehydrate(store: Store) = async { //TODO: use traverse here
         try
             let! conn = ConnectionMultiplexer.ConnectAsync(x.Settings.ConnectionString) |> Async.AwaitTask
+            
+            conn.GetEndPoints() 
+                |> Array.find (fun ep -> (not (conn.GetServer(ep).IsSlave)))
+                |> conn.GetServer 
+                |> flush
+
             return getEvents store
                     |>> groupById
                     |>> List.map replayPostStream

@@ -5,9 +5,9 @@ open WorkingTitle.Utils.RResult
 open WorkingTitle.Domain.Posts.Events
 open WorkingTitle.Domain.EventSource
 
-type ChangePostContent(id: string, timestamp: DateTimeOffset, content: string) = 
-    member this.EntityId = id
-    member this.Timestamp = timestamp
+type ChangePostContent(entityId: string, content: string) = 
+    member this.EntityId = entityId
+    member this.Timestamp = DateTimeOffset.UtcNow
     member this.Content = content
 
     member this.ToEvent() = 

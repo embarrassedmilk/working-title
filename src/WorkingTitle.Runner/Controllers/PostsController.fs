@@ -8,6 +8,7 @@ open WorkingTitle.Utils.RResult
 open WorkingTitle.Domain.Posts
 open WorkingTitle.RabbitMQ
 open WorkingTitle.Runner
+open WorkingTitle.Redis
 
 [<Route("api/[controller]")>]
 type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
@@ -21,10 +22,11 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
                     )
                  )
 
+    let cache = Cache(CacheSettings(settings.RedisConnectionString))
+
     let getEvents (id:string) =
         store.GetEvents id
         |> Async.RunSynchronously
-        |>> Array.toList
 
     [<HttpPost>]
     [<Route("publish")>]
@@ -45,7 +47,9 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
         let res = getEvents cmd.EntityId
                 |>> Post.ReplayPost
                 >>= Post.Edit cmd
-                >>= (fun (evts, _) -> store.Store cmd.EntityId evts |> Async.RunSynchronously)
+                >>= (fun (evts, _) -> 
+                    store.Store cmd.EntityId evts |> Async.RunSynchronously 
+                        |- (fun (_) -> evts |> List.iter (rabbit.Publish >> ignore)))
 
         match res with
         | RResult.Good _    -> __.Ok "Success!"                     :> IActionResult
@@ -58,6 +62,15 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
         match res with 
         | RResult.Good state  ->  __.Ok state                       :> IActionResult
         | RResult.Bad  rbad   -> (rbad.Describe() |> __.BadRequest) :> IActionResult
+
+    [<HttpPut("posts/rehydrate")>]
+    member __.Rehydrate() =
+        let res = cache.Rehydrate(store) |> Async.RunSynchronously
+
+        match res with 
+        | RResult.Good _      ->  __.Ok()                           :> IActionResult
+        | RResult.Bad  rbad   -> (rbad.Describe() |> __.BadRequest) :> IActionResult
+
 
 // Orchestration part:
 // event is saved to ES

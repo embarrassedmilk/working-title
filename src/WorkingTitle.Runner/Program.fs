@@ -17,10 +17,10 @@ let getLoggerConfiguration =
 let main argv =
     SnakeWebHostBuilder<Settings>
         .CreateDefaultBuilder(argv)
-        .With(fun (_) -> CorsPart() :> IApplicationPlugin)
-        .With(fun (_) -> SignalRPart() :> IApplicationPlugin)
-        .With(fun (s) -> AuthenticationPart(s.AuthenticationSettings) :> IApplicationPlugin)
-        .With(fun (s) -> BackgroundPart(s) :> IApplicationPlugin)
+        .With(fun (_) -> CorsPart()                                     :> IApplicationPlugin)
+        .With(fun (_) -> SignalRPart()                                  :> IApplicationPlugin)
+        .With(fun (s) -> AuthenticationPart(s.AuthenticationSettings)   :> IApplicationPlugin)
+        .With(fun (s) -> BackgroundPart(s)                              :> IApplicationPlugin)
         .WithMvc()
         .WithSwagger("ES app")
         .WithSerilog(getLoggerConfiguration)

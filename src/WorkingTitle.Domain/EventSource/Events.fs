@@ -10,3 +10,8 @@ type Events =
         match x with 
         | Published published -> published.EntityId
         | Edited edited -> edited.EntityId
+
+    member x.Timestamp : DateTimeOffset = 
+        match x with 
+        | Published published -> published.Timestamp
+        | Edited edited -> edited.Timestamp

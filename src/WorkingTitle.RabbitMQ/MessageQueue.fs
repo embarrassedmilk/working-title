@@ -31,6 +31,7 @@ type MessageQueueWriter(queueSettings: MessageQueueSettings) =
             RResult.rgood ()
         with
         | ex -> 
+            Serilog.Log.Logger.Error(ex, "Could not publish")
             RResult.rexn ex
 
 type MessageQueueReader(queueSettings: MessageQueueSettings) = 
@@ -41,20 +42,17 @@ type MessageQueueReader(queueSettings: MessageQueueSettings) =
 
     member x.Settings = queueSettings
 
-    member x.Subscribe (f: Events -> unit) =
+    member x.Poll (f: Events -> unit) =
         try
             let factory = new ConnectionFactory()
             factory.Uri <- new Uri(x.Settings.ConnectionString)
             use conn = factory.CreateConnection()
             let channel = conn.CreateModel()
-            let consumer = new EventingBasicConsumer(channel)
-            consumer.Received.Add(fun (ea) -> 
-                let body = ea.Body
-                f (getEvent body)
-                channel.BasicAck(ea.DeliveryTag, false)
-            )
-
+            let result = channel.BasicGet(queueSettings.QueueName, true)
+            match result with
+            | null  -> ()
+            | _     -> result.Body |> getEvent |> f
             RResult.rgood ()
         with
         | ex -> 
-            RResult.rexn ex
+            RResult.rexn ex 

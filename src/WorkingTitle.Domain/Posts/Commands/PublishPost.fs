@@ -5,9 +5,9 @@ open WorkingTitle.Utils.RResult
 open WorkingTitle.Domain.Posts.Events
 open WorkingTitle.Domain.EventSource
 
-type PublishPost(author: string, timestamp: DateTimeOffset, content: string) = 
+type PublishPost(author: string, content: string) = 
     member this.Author = author
-    member this.Timestamp = timestamp
+    member this.Timestamp = DateTimeOffset.UtcNow
     member this.Content = content
     
     member this.ToEvent() = 

@@ -12,7 +12,7 @@ module Store =
         member x.ConnectionString = connectionString
 
     type Store(settings: StoreSettings) =
-        let getDataArray (evt: Events) =
+        let getDataArray (evt: Object) =
             JsonConvert.SerializeObject evt 
             |> System.Text.Encoding.ASCII.GetBytes
 
@@ -31,10 +31,23 @@ module Store =
         let mapEventSliceToEvents (slice: StreamEventsSlice) = 
             slice.Events
             |> Array.map resolvedEventToEvent
+            |> Array.toList
             
         let mapAllEventSliceToEvents (slice: AllEventsSlice) = 
             slice.Events
+            |> Array.filter (fun item -> item.Event.EventType = "working-type")
             |> Array.map resolvedEventToEvent
+            |> Array.toList
+
+        let getAllEvents (conn: IEventStoreConnection) = async {
+            let mutable events : Events list = []
+            let mutable chunk = conn.ReadAllEventsForwardAsync(Position.Start, 1000, false) |> Async.AwaitTask |> Async.RunSynchronously
+            events <- events |> List.append (mapAllEventSliceToEvents chunk)
+            while (not chunk.IsEndOfStream) do
+                chunk <- conn.ReadAllEventsForwardAsync(chunk.NextPosition, 1000, false) |> Async.AwaitTask |> Async.RunSynchronously
+                events <- events |> List.append (mapAllEventSliceToEvents chunk)
+            return events
+        }
 
         member x.Settings = settings
         member x.Store (streamId: string) (evts: Events list) = async {
@@ -46,7 +59,7 @@ module Store =
                 
                 let res = 
                     evts 
-                    |> List.map (fun evt -> EventData(Guid.NewGuid(), evt.GetType().ToString(), true, getDataArray evt, getMetadataArray))
+                    |> List.map (fun evt -> EventData(Guid.NewGuid(), "working-type", true, getDataArray evt, getMetadataArray))
                     |> (fun mapped -> Async.AwaitTask(conn.AppendToStreamAsync(streamId, ExpectedVersion.Any, mapped)))
                     |> Async.RunSynchronously 
                     |> ignore
@@ -79,15 +92,9 @@ module Store =
             try 
                 use conn = EventStoreConnection.Create x.Settings.ConnectionString
                 
-                Async.AwaitTask(conn.ConnectAsync())
-                |> Async.RunSynchronously
-
-                let res = 
-                    Async.AwaitTask(conn.ReadAllEventsForwardAsync(Position.Start, 1000, false))
-                    |> Async.RunSynchronously 
-                    |> mapAllEventSliceToEvents
+                Async.AwaitTask(conn.ConnectAsync()) |> Async.RunSynchronously
                 
-                return RResult.rgood res
+                return RResult.rgood (getAllEvents conn |> Async.RunSynchronously )
             with
             | ex -> 
                 return RResult.rexn ex
