@@ -2,8 +2,8 @@ namespace WorkingTitle.Domain.Posts.Snapshots
 
 open System
 
-type ExistingPostState(id: string, timestamp: DateTimeOffset, author: string, content: string) = 
-    member this.EntityId = id
+type ExistingPostState(entityId: string, timestamp: DateTimeOffset, author: string, content: string) = 
+    member this.EntityId = entityId
     member this.Author = author
     member this.Timestamp = timestamp
     member this.Content = content
