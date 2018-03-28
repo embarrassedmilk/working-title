@@ -28,6 +28,10 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
         store.GetEvents id
         |> Async.RunSynchronously
 
+    let getSnapshot (id:string) =
+        cache.GetPostById id
+        |> Async.RunSynchronously
+
     [<HttpPost>]
     [<Route("publish")>]
     member __.PublishPost([<FromBody>]cmd:PublishPost) =
@@ -57,10 +61,8 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
 
     [<HttpGet("posts/{id}")>]
     member __.GetSnapshotById(id:string) =
-        let res = getEvents id |>> Post.ReplayPost
-        
-        match res with 
-        | RResult.Good state  ->  __.Ok state                       :> IActionResult
+        match (getSnapshot id) with 
+        | RResult.Good state  ->  __.Ok state.Value                 :> IActionResult
         | RResult.Bad  rbad   -> (rbad.Describe() |> __.BadRequest) :> IActionResult
 
     [<HttpPut("posts/rehydrate")>]
