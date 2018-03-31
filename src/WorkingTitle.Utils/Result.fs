@@ -106,3 +106,27 @@ module RResult =
         static member inline (<*>)  (x, t)  = RResult.rapply   t x
         static member inline (|>>)  (x, m)  = RResult.rmap     m x
         static member inline (|-)   (x, t)  = RResult.rtee     t x
+open RResult
+
+
+module AsyncRResult =
+    type AsyncRResult<'a> = Async<RResult.RResult<'a>>
+
+    let map f =
+        f |> Async.map |> RResult.RResult.rmap
+    
+    let retn x =
+        x |> RResult.RResult.rreturn |> Async.retn
+
+    let bind f xAsyncRResult = async {
+        let! xRResult = xAsyncRResult
+
+        match xRResult with
+        | RResult.RResult.Good rgood -> return! f rgood
+        | RResult.RResult.Bad  rbad  -> return RResult.RResult.Bad rbad 
+    }
+
+    let apply fAsyncRResult xAsyncRResult = 
+        fAsyncRResult |> Async.bind (fun fRResult -> 
+        xAsyncRResult |> Async.map (fun xRResult -> 
+        RResult.rapply xRResult fRResult)) 

@@ -72,13 +72,3 @@ type PostsController (hc:IHubContext<EventsHub>, settings: Settings) =
         match res with 
         | RResult.Good _      ->  __.Ok()                           :> IActionResult
         | RResult.Bad  rbad   -> (rbad.Describe() |> __.BadRequest) :> IActionResult
-
-
-// Orchestration part:
-// event is saved to ES
-// event gets published to Queue
-// Redis picks up message from the Queue
-// Applies event, saves it
-
-// Background part:
-// Redis is listenting to Rabbit
